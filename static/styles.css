@@ -1,0 +1,78 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #F5F5F5;
+    color: #333;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    background-color: #FFF;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #DDD;
+}
+
+th, td {
+    text-align: left;
+    padding: 15px;
+}
+
+th {
+    background-color: #ec6834;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #F0F0F0;
+}
+
+.special-prize {
+    color: #FF1493;
+}
+
+button {
+    margin: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #6495ED;
+    color: #FFF;
+    cursor: pointer;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+}
+
+button:hover {
+    background-color: #528bf4;
+    box-shadow: 0px 15px 20px rgba(46, 204, 221, 0.4);
+    color: #FFF;
+    transform: translateY(-7px);
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #F0F0F0;
+    color: #333;
+}
+  
+li.special-prize {  
+    background-color: #FFC0CB; 
+    color: #FF1493;  
+}

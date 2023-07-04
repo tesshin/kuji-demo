@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Lottery</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <div class="container">
+      <h1>My Lottery</h1>
+      <div id="statistics">
+        <p>くじ引いた回数: <span id="total-draws">0</span></p>
+        <p>コンプするまでにくじ引いた回数: <span id="complete-draw-count">N/A</span></p>
+        <p>S賞: <span id="s-prizes">0</span> (Rate: <span id="s-prize-rate">0</span>%)</p>
+        <p>通常賞: <span id="normal-prizes">0</span> (Rate: <span id="normal-prize-rate">0</span>%)</p>
+      </div>
+      <button id="single-draw" onclick="fetchResult(1)">1回</button>
+      <button id="single-draw-thousand" onclick="for(let i=0; i<1000; i++){fetchResult(1)}">1回を1000回</button>
+      <button id="multiple-draw" onclick="fetchResult(10)">10回</button>
+      <button id="multiple-draw-thousand" onclick="for(let i=0; i<1000; i++){fetchResult(10)}">10回を1000回</button>
+      <table id="prize-table">
+        <thead>
+            <tr>
+                <th>賞</th>
+                <th>でた回数</th>
+                <th>確率</th>
+            </tr>
+        </thead>
+        <tbody id="prize-table-body">
+        </tbody>
+      </table>
+      <ul id="results"></ul>
+    </div>
+    <script>
+      let totalDraws = 0;
+      let sPrizes = 0;
+      let normalPrizes = 0;
+      let prizeCount = {};
+      let completeDrawCount = null;
+      let allPrizes = ['S賞_1', 'S賞_2', 'S賞_3', ...Array.from({length: 20}, (_, i) => '通常賞_' + (i + 1))];
+
+
+      function fetchResult(times) {
+        fetch('/draw?times=' + times)
+          .then(response => response.json())
+          .then(data => {
+            totalDraws += times;
+            document.getElementById('total-draws').textContent = totalDraws;
+
+            const resultsElement = document.getElementById('results');
+            resultsElement.innerHTML = '';
+            data.prizes.forEach(prize => {
+              const listItem = document.createElement('li');
+              listItem.textContent = prize;
+              if (prize.startsWith('S賞')) {  
+                listItem.classList.add('special-prize'); 
+                sPrizes++;
+              } else {
+                normalPrizes++;
+              }
+              resultsElement.appendChild(listItem);
+              
+              // Update the count of each prize
+              if (!prizeCount[prize]) {
+                prizeCount[prize] = 0;
+              }
+              prizeCount[prize]++;
+              
+              // Check if all prizes have been drawn
+              if (completeDrawCount === null && Object.keys(prizeCount).length === allPrizes.length) {
+                completeDrawCount = totalDraws;
+                document.getElementById('complete-draw-count').textContent = completeDrawCount;
+              }
+            });
+
+            document.getElementById('s-prizes').textContent = sPrizes;
+            document.getElementById('s-prize-rate').textContent = (sPrizes / totalDraws * 100).toFixed(2);
+            document.getElementById('normal-prizes').textContent = normalPrizes;
+            document.getElementById('normal-prize-rate').textContent = (normalPrizes / totalDraws * 100).toFixed(2);
+            
+            // Update the prize table
+            const tableBody = document.getElementById('prize-table-body');
+            tableBody.innerHTML = '';
+            allPrizes.sort().forEach(prize => {
+              const row = document.createElement('tr');
+              const nameCell = document.createElement('td');
+              const countCell = document.createElement('td');
+              const rateCell = document.createElement('td');
+              nameCell.textContent = prize;
+              countCell.textContent = prizeCount[prize] || 0;
+              rateCell.textContent = ((prizeCount[prize] || 0) / totalDraws * 100).toFixed(2) + '%';
+              row.appendChild(nameCell);
+              row.appendChild(countCell);
+              row.appendChild(rateCell);
+              tableBody.appendChild(row);
+            });
+          });
+      }
+    </script>
+  </body>
+</html>
